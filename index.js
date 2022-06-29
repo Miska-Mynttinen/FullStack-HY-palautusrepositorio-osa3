@@ -66,6 +66,20 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
+  const duplicateName = persons.find(person => person.name === body.name)
+  if (typeof duplicateName !== 'undefined') {
+    return response.status(400).json({
+      error: 'name must be unique'
+    })
+  }
+  
+  const duplicateID = persons.find(person => person.id === generateID)
+  if (typeof duplicateID !== 'undefined') {
+    return response.status(400).json({
+      error: 'id already exists try again with random number generator'
+    })
+  }
+
   const person = {
     id: generateID,
     name: body.name,

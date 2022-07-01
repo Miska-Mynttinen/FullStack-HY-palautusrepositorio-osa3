@@ -1,3 +1,3 @@
 Palautukseni Helsingin yliopiston FullStack Web Development kurssille osaan 3.
 
-Nettisivu: https://conservative-inukshuk-77370.herokuapp.com/
+Nettisivu: https://multicultural-crown-96229.herokuapp.com/

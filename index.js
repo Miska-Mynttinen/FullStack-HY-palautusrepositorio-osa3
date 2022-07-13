@@ -24,25 +24,17 @@ app.get('/api/persons', (request, response, next) => {
   .catch(error => next(error))
 })
 
-/*let persons = app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons)
-  })
-  .catch(error => next(error))
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
-
-
-const requestTime = new Date()
-const peopleAmount = persons.length
-app.get('/info', (request, response) => {
-  response.send(`<p>Phonebook has info for ${peopleAmount} people</p><p>${requestTime}</p>`)
-})*/
-
-/*app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then.apply(person => {
-    response.json(person)
-  })
-})*/
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
@@ -69,7 +61,7 @@ app.post('/api/persons', (request, response, next) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
-  .catch(error => next(error))
+  .catch(error =>  next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -91,6 +83,14 @@ app.put('/api/persons/:id', (request, response, next) => {
       response.json(updatedPerson)
     })
     .catch(error => next(error))
+})
+
+app.get('/info', (request, response, next) => {
+  const requestTime = new Date()
+  Person.find({}).then(persons => {
+    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${requestTime}</p>`)
+  })
+  .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {

@@ -17,16 +17,18 @@ app.use(cors())
 
 app.use(express.static('build'))
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
   Person.find({}).then(persons => {
     response.json(persons)
   })
+  .catch(error => next(error))
 })
 
-let persons = app.get('/api/persons', (request, response) => {
+/*let persons = app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons)
   })
+  .catch(error => next(error))
 })
 
 
@@ -34,23 +36,23 @@ const requestTime = new Date()
 const peopleAmount = persons.length
 app.get('/info', (request, response) => {
   response.send(`<p>Phonebook has info for ${peopleAmount} people</p><p>${requestTime}</p>`)
-})
+})*/
 
-app.get('/api/persons/:id', (request, response) => {
+/*app.get('/api/persons/:id', (request, response) => {
   Person.findById(request.params.id).then.apply(person => {
     response.json(person)
   })
+})*/
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
-})
-
-//const generateID = Math.floor(Math.random() * 1000000)
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name || !body.number) {
@@ -58,21 +60,6 @@ app.post('/api/persons', (request, response) => {
       error: 'name or number missing'
     })
   }
-
-  /* old duplicate tests
-  const duplicateName = persons.find(person => person.name === body.name)
-  if (typeof duplicateName !== 'undefined') {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
-  
-  const duplicateID = persons.find(person => person.id === generateID)
-  if (typeof duplicateID !== 'undefined') {
-    return response.status(400).json({
-      error: 'id already exists try again with random number generator'
-    })
-  }*/
 
   const person = new Person({
     name: body.name,
@@ -82,7 +69,26 @@ app.post('/api/persons', (request, response) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
+  .catch(error => next(error))
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

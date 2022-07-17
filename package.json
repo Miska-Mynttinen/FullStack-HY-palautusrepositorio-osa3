@@ -10,7 +10,8 @@
     "build:ui": "rmdir /s build && mkdir build && cd C:\\Users\\miska\\FullStack-HY-palautusrepositorio\\osa2\\puhelinluettelo && npm run build && xcopy /E C:\\Users\\miska\\FullStack-HY-palautusrepositorio\\osa2\\puhelinluettelo\\build C:\\Users\\miska\\FullStack-HY-palautusrepositorio-osa3\\build",
     "deploy": "git push heroku master",
     "deploy:full": "npm run build:ui && git add . && git commit -m 3.21_internettiin_tietokanta_ja_korjattu_3.20_validaattoria && git push && npm run deploy",
-    "logs:prod": "heroku logs --tail"
+    "logs:prod": "heroku logs --tail",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^8.20.0",
     "nodemon": "^2.0.18"
   }
 }
